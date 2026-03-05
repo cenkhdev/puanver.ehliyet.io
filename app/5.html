@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sürücü Rehberi Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --bg: #f8f9fc;
+            --card-bg: #ffffff;
+            --text-main: #2b2d42;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--bg); 
+            margin: 0; 
+            display: flex; 
+            justify-content: center;
+            color: var(--text-main);
+        }
+
+        .phone-container {
+            width: 100%;
+            max-width: 430px;
+            height: 95vh;
+            background: var(--bg);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+            margin-top: 2vh;
+            border-radius: 40px;
+            border: 8px solid #333; /* Telefon kasası efekti */
+        }
+
+        /* Üst Bar */
+        .top-header {
+            padding: 25px 20px 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .user-badge {
+            background: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        /* Geçme İhtimali - Modern Kart */
+        .score-card {
+            background: linear-gradient(135deg, #4361ee, #4cc9f0);
+            margin: 15px 20px;
+            padding: 20px;
+            border-radius: 25px;
+            color: white;
+            position: relative;
+            box-shadow: 0 10px 20px rgba(67, 97, 238, 0.3);
+        }
+        .score-val { font-size: 2.2rem; font-weight: 800; }
+        .score-label { font-size: 0.9rem; opacity: 0.9; }
+
+        /* Premium Banner - Hareketli */
+        .premium-banner {
+            margin: 0 20px 15px;
+            background: #fff;
+            border: 2px solid #ffbe0b;
+            padding: 15px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        /* Ana Menü Grid */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            padding: 0 20px;
+        }
+        .menu-item {
+            background: white;
+            padding: 25px 15px;
+            border-radius: 25px;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        .menu-item:active { transform: scale(0.9); background: #f0f0f0; }
+        .menu-item i { font-size: 2.5rem; display: block; margin-bottom: 10px; }
+        .menu-item span { font-weight: 700; font-size: 1rem; color: #444; }
+
+        /* Diğer İçerikler Butonu */
+        .more-btn {
+            margin: 20px;
+            background: #eef2ff;
+            color: #4361ee;
+            border: none;
+            padding: 18px;
+            border-radius: 20px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* ALT MENÜ (Drawer) - Başlangıçta Gizli */
+        .drawer-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            z-index: 100;
+        }
+        .drawer {
+            position: absolute;
+            bottom: -100%;
+            left: 0; right: 0;
+            background: white;
+            border-top-left-radius: 35px;
+            border-top-right-radius: 35px;
+            padding: 30px 20px;
+            transition: bottom 0.4s ease;
+            z-index: 101;
+        }
+        .drawer.open { bottom: 0; }
+        .drawer-list { display: flex; flex-direction: column; gap: 15px; }
+        .drawer-item {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-weight: 600;
+        }
+
+        /* Sabit Alt Navigasyon */
+        .nav-bar {
+            position: absolute;
+            bottom: 0; width: 100%;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0 25px;
+            border-top: 1px solid #eee;
+        }
+        .nav-link { text-align: center; color: #aaa; text-decoration: none; flex: 1; }
+        .nav-link.active { color: var(--primary); }
+        .nav-link div { font-size: 1.4rem; }
+        .nav-link span { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
+    </style>
+</head>
+<body>
+
+<div class="phone-container">
+    <div class="top-header">
+        <div class="user-badge">
+            <span>👤</span> Misafir Kullanıcı
+        </div>
+        <div style="font-size: 1.5rem;">🔔</div>
+    </div>
+
+    <div class="score-card">
+        <div class="score-label">Tahmini Sınav Sonucun</div>
+        <div class="score-val">%85</div>
+        <div style="margin-top:10px; height:6px; background:rgba(255,255,255,0.3); border-radius:10px;">
+            <div style="width:85%; height:100%; background:#fff; border-radius:10px;"></div>
+        </div>
+    </div>
+
+    <div class="premium-banner" id="premiumBox">
+        <span style="font-size: 2rem;">🎁</span>
+        <div>
+            <div style="font-weight: 800; color: #d4a017;">SANA ÖZEL İNDİRİM!</div>
+            <div style="font-size: 0.8rem;" id="timer">Kalan Süre: 23:59:59</div>
+        </div>
+    </div>
+
+    <div class="menu-grid">
+        <div class="menu-item"><i>📝</i><span>Çıkmış<br>Sorular</span></div>
+        <div class="menu-item"><i>🔥</i><span>Günün<br>Sınavı</span></div>
+        <div class="menu-item"><i>📖</i><span>Konu<br>Testleri</span></div>
+        <div class="menu-item"><i>⚠️</i><span>Hatalı<br>Sorular</span></div>
+    </div>
+
+    <button class="more-btn" onclick="toggleDrawer()">
+        ➕ Diğer Her Şey
+    </button>
+
+    <div class="drawer-overlay" id="overlay" onclick="toggleDrawer()"></div>
+    <div class="drawer" id="drawer">
+        <div style="width:40px; height:5px; background:#ddd; margin: 0 auto 20px; border-radius:10px;"></div>
+        <h3 style="margin-top:0">Diğer İçerikler</h3>
+        <div class="drawer-list">
+            <div class="drawer-item">🎲 <span>Rastgele Sınav Yap</span></div>
+            <div class="drawer-item">📄 <span>Ders Notlarını Oku</span></div>
+            <div class="drawer-item">🎥 <span>Eğitim Videoları</span></div>
+            <div class="drawer-item">🛑 <span>Trafik Levhaları</span></div>
+            <div class="drawer-item">📢 <span>Resmi Duyurular</span></div>
+        </div>
+        <button class="more-btn" style="margin: 20px 0 0;" onclick="toggleDrawer()">Kapat</button>
+    </div>
+
+    <div class="nav-bar">
+        <a href="#" class="nav-link active"><div>🏠</div><span>Anasayfa</span></a>
+        <a href="#" class="nav-link"><div>🏆</div><span>Sıralama</span></a>
+        <a href="#" class="nav-link"><div>📊</div><span>Analiz</span></a>
+        <a href="#" class="nav-link"><div>⚙️</div><span>Ayarlar</span></a>
+    </div>
+</div>
+
+<script>
+    // Menüyü Aç/Kapat
+    function toggleDrawer() {
+        const drawer = document.getElementById('drawer');
+        const overlay = document.getElementById('overlay');
+        drawer.classList.toggle('open');
+        overlay.style.display = drawer.classList.contains('open') ? 'block' : 'none';
+    }
+
+    // Basit Geri Sayım Sayacı
+    let time = 24 * 60 * 60;
+    setInterval(() => {
+        time--;
+        let h = Math.floor(time / 3600);
+        let m = Math.floor((time % 3600) / 60);
+        let s = time % 60;
+        document.getElementById('timer').innerText = `Kalan Süre: ${h}:${m < 10 ? '0'+m : m}:${s < 10 ? '0'+s : s}`;
+    }, 1000);
+</script>
+
+</body>
+</html>
