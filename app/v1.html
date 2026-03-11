@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>SınavPlus</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --blue:#2563EB;--blue-lt:#EFF6FF;
+  --green:#16A34A;--green-lt:#F0FDF4;
+  --orange:#EA580C;--orange-lt:#FFF7ED;
+  --red:#DC2626;--red-lt:#FEF2F2;
+  --bg:#F1F5F9;--white:#FFFFFF;
+  --text:#1E293B;--sub:#64748B;
+  --border:#E2E8F0;--radius:16px;
+  --shadow:0 2px 12px rgba(0,0,0,.07);
+}
+html,body{height:100%;background:var(--bg);font-family:'Nunito',sans-serif;color:var(--text)}
+.shell{max-width:390px;margin:0 auto;min-height:100vh;background:var(--bg);display:flex;flex-direction:column}
+
+/* ─── TOPBAR ─── */
+.topbar{background:var(--white);padding:11px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50}
+.logo{font-size:20px;font-weight:900;color:var(--blue);letter-spacing:-.5px}
+.logo em{color:var(--orange);font-style:normal}
+.login-btn{display:flex;align-items:center;gap:6px;background:var(--blue);color:#fff;border-radius:30px;padding:7px 14px;cursor:pointer;font-size:12px;font-weight:800;border:none;transition:opacity .15s;font-family:inherit}
+.login-btn:active{opacity:.8}
+.login-btn svg{width:13px;height:13px;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none;flex-shrink:0}
+
+/* ─── CONTENT ─── */
+.content{flex:1;overflow-y:auto;padding:14px 14px 90px;display:flex;flex-direction:column;gap:11px}
+.content::-webkit-scrollbar{display:none}
+
+/* ─── SLIDER ─── */
+.slider-wrap{position:relative}
+.slider-track{display:flex;overflow:hidden;border-radius:var(--radius)}
+
+/* All slides same fixed height — this is the key fix */
+.slide{
+  min-width:100%;
+  height:152px;        /* fixed height — all cards identical */
+  border-radius:var(--radius);
+  overflow:hidden;
+  flex-shrink:0;
+}
+
+/* card base: fill entire slide */
+.card-chance,
+.card-premium,
+.card-login{
+  height:100%;
+  padding:16px 18px;
+  color:#fff;
+  position:relative;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+
+/* Card 1 */
+.card-chance{background:linear-gradient(135deg,#1D4ED8 0%,#2563EB 60%,#1E40AF 100%)}
+.card-chance::after{content:'';position:absolute;right:-25px;top:-25px;width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,.07)}
+.cc-label{font-size:10px;font-weight:700;opacity:.72;text-transform:uppercase;letter-spacing:.5px}
+.cc-mid{display:flex;align-items:center;justify-content:space-between}
+.cc-pct{font-size:40px;font-weight:900;line-height:1}
+.cc-pct em{font-size:20px;font-style:normal}
+.cc-note{font-size:11px;opacity:.72;font-weight:600;margin-top:2px}
+.cc-ring{width:60px;height:60px;position:relative;flex-shrink:0}
+.cc-ring svg{transform:rotate(-90deg)}
+.r-bg{fill:none;stroke:rgba(255,255,255,.2);stroke-width:6}
+.r-fill{fill:none;stroke:#fff;stroke-width:6;stroke-linecap:round;stroke-dasharray:151;stroke-dashoffset:38;filter:drop-shadow(0 0 4px rgba(255,255,255,.4))}
+.r-txt{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:#fff}
+.cc-chips{display:flex;gap:7px}
+.cchip{background:rgba(255,255,255,.15);border-radius:20px;padding:3px 9px;font-size:10px;font-weight:700}
+.cchip.g{background:rgba(74,222,128,.28)}
+.cchip.w{background:rgba(251,191,36,.28)}
+
+/* Card 2 */
+.card-premium{background:linear-gradient(135deg,#78350F 0%,#B45309 55%,#D97706 100%);cursor:pointer}
+.card-premium::after{content:'';position:absolute;right:-15px;bottom:-20px;width:95px;height:95px;border-radius:50%;background:rgba(255,255,255,.07)}
+.p-badge{position:absolute;top:10px;right:12px;background:#FCD34D;color:#78350F;font-size:10px;font-weight:900;border-radius:20px;padding:2px 9px}
+.p-top{display:flex;align-items:center;gap:9px}
+.p-icon{font-size:28px;line-height:1}
+.p-title{font-size:15px;font-weight:900}
+.p-sub{font-size:11px;opacity:.82;font-weight:600;margin-top:1px}
+.p-feats{display:flex;gap:6px}
+.pfeat{background:rgba(255,255,255,.15);border-radius:9px;padding:5px 6px;flex:1;text-align:center}
+.pfeat .pf-i{font-size:15px}
+.pfeat .pf-t{font-size:9px;font-weight:800;margin-top:2px;line-height:1.2}
+.p-cta{background:#FCD34D;color:#78350F;border-radius:9px;padding:7px;text-align:center;font-size:12px;font-weight:900}
+
+/* Card 3 */
+.card-login{background:linear-gradient(135deg,#4C1D95 0%,#6D28D9 55%,#7C3AED 100%)}
+.card-login::after{content:'';position:absolute;right:-15px;top:-15px;width:90px;height:90px;border-radius:50%;background:rgba(255,255,255,.07)}
+.l-top{display:flex;align-items:center;gap:9px}
+.l-icon{width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.l-icon svg{width:17px;height:17px;stroke:#fff;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;fill:none}
+.l-title{font-size:15px;font-weight:900}
+.l-sub{font-size:10px;opacity:.8;font-weight:600;margin-top:1px}
+.l-desc{font-size:11px;opacity:.82;font-weight:600;line-height:1.45}
+.l-btns{display:flex;gap:7px}
+.lb-out{flex:1;border:1.5px solid rgba(255,255,255,.5);border-radius:8px;padding:7px;text-align:center;font-size:11px;font-weight:800;cursor:pointer}
+.lb-in{flex:1.6;background:#fff;color:#6D28D9;border-radius:8px;padding:7px;text-align:center;font-size:11px;font-weight:900;cursor:pointer}
+
+/* Dots */
+.slider-dots{display:flex;justify-content:center;gap:5px;margin-top:7px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--border);transition:all .25s;cursor:pointer}
+.dot.active{background:var(--blue);width:18px;border-radius:3px}
+
+/* ─── COUNTDOWN ─── */
+.countdown{background:#FEF3C7;border:1.5px solid #FCD34D;border-radius:11px;padding:7px 14px;display:flex;align-items:center;gap:8px}
+.cd-fire{font-size:15px}
+.cd-txt{font-size:11px;font-weight:700;color:#92400E}
+.cd-timer{margin-left:auto;font-size:13px;font-weight:900;color:#B45309;font-variant-numeric:tabular-nums}
+
+/* ─── 4 ANA BUTON ─── */
+.grid-4{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.big-btn{
+  background:var(--white);border-radius:var(--radius);
+  padding:16px 12px 14px;
+  display:flex;flex-direction:column;align-items:center;gap:9px;
+  cursor:pointer;transition:transform .12s;
+  box-shadow:var(--shadow);border:1.5px solid transparent;
+  text-align:center;position:relative;overflow:hidden;
+}
+.big-btn:active{transform:scale(.96)}
+.iw{width:48px;height:48px;border-radius:13px;display:flex;align-items:center;justify-content:center}
+.iw svg{width:24px;height:24px;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.btn-label{font-size:13px;font-weight:800;line-height:1.2}
+.btn-sub{font-size:11px;color:var(--sub);font-weight:600;margin-top:1px}
+.big-btn.blue{border-color:#BFDBFE}.big-btn.blue .iw{background:var(--blue-lt)}.big-btn.blue .iw svg{stroke:var(--blue)}
+.big-btn.green{border-color:#BBF7D0}.big-btn.green .iw{background:var(--green-lt)}.big-btn.green .iw svg{stroke:var(--green)}
+.big-btn.orange{border-color:#FED7AA}.big-btn.orange .iw{background:var(--orange-lt)}.big-btn.orange .iw svg{stroke:var(--orange)}
+.big-btn.red{border-color:#FECACA}.big-btn.red .iw{background:var(--red-lt)}.big-btn.red .iw svg{stroke:var(--red)}
+.bcnt{position:absolute;top:8px;right:8px;background:var(--red);color:#fff;font-size:10px;font-weight:800;border-radius:20px;min-width:18px;height:18px;padding:0 4px;display:flex;align-items:center;justify-content:center}
+
+/* ─── DİĞER ROW — glass ─── */
+.other-row{
+  background:rgba(255,255,255,0.72);
+  backdrop-filter:blur(16px) saturate(180%);
+  -webkit-backdrop-filter:blur(16px) saturate(180%);
+  border:1px solid rgba(255,255,255,0.85);
+  border-radius:var(--radius);
+  box-shadow:0 4px 18px rgba(100,116,139,.10), inset 0 1px 0 rgba(255,255,255,.9);
+  cursor:pointer;
+  transition:background .15s;
+  overflow:hidden;
+}
+.other-row:active{background:rgba(255,255,255,0.55)}
+.or-inner{display:flex;align-items:center;justify-content:space-between;padding:13px 16px 0}
+.or-left{display:flex;align-items:center;gap:10px}
+.or-ham{display:flex;flex-direction:column;gap:3px;flex-shrink:0}
+.or-ham span{display:block;background:#94A3B8;border-radius:2px;height:2px}
+.or-ham span:nth-child(1){width:17px}
+.or-ham span:nth-child(2){width:12px}
+.or-ham span:nth-child(3){width:8px}
+.or-title{font-size:14px;font-weight:800;color:var(--text)}
+.or-right{display:flex;align-items:center;gap:4px;font-size:12px;font-weight:700;color:var(--sub)}
+.or-chev{width:6px;height:11px;stroke:var(--sub);stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.or-sub{padding:4px 16px 13px;font-size:11px;color:var(--sub);font-weight:600}
+
+/* ─── BOTTOM NAV ─── */
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:390px;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--border);display:flex;padding:8px 0 max(8px,env(safe-area-inset-bottom));z-index:100;box-shadow:0 -2px 14px rgba(0,0,0,.06)}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 0;color:var(--sub);position:relative;transition:color .15s}
+.nav-item.active{color:var(--blue)}
+.nav-icon{width:26px;height:26px;display:flex;align-items:center;justify-content:center;position:relative}
+.nav-icon svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.nav-label{font-size:10px;font-weight:700}
+.active-bar{position:absolute;bottom:-8px;width:22px;height:2.5px;border-radius:2px;background:var(--blue);opacity:0;transition:opacity .15s}
+.nav-item.active .active-bar{opacity:1}
+
+/* Bell badge + vibrate */
+.bell-wrap{position:relative;display:flex;align-items:center;justify-content:center}
+.bell-badge{position:absolute;top:-5px;right:-6px;background:var(--red);color:#fff;font-size:9px;font-weight:900;border-radius:20px;min-width:16px;height:16px;padding:0 3px;display:flex;align-items:center;justify-content:center;border:1.5px solid rgba(255,255,255,.9);pointer-events:none}
+@keyframes bellVibe{
+  0%,100%{transform:translateX(0) rotate(0)}
+  8%  {transform:translateX(-2.5px) rotate(-6deg)}
+  18% {transform:translateX(2.5px)  rotate(6deg)}
+  28% {transform:translateX(-2px)   rotate(-5deg)}
+  38% {transform:translateX(2px)    rotate(5deg)}
+  48% {transform:translateX(-1.5px) rotate(-3deg)}
+  58% {transform:translateX(1.5px)  rotate(3deg)}
+  68% {transform:translateX(-1px)   rotate(-2deg)}
+  78% {transform:translateX(1px)    rotate(1deg)}
+  88% {transform:translateX(0)      rotate(0)}
+}
+.bell-vibe{animation:bellVibe .7s ease both;transform-origin:top center}
+
+/* ─── OVERLAY / SHEET ─── */
+.overlay{position:fixed;inset:0;background:rgba(15,23,42,.4);z-index:200;opacity:0;pointer-events:none;transition:opacity .28s;backdrop-filter:blur(2px)}
+.overlay.open{opacity:1;pointer-events:all}
+.bsheet{position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(110%);width:100%;max-width:390px;background:var(--white);border-radius:22px 22px 0 0;z-index:201;transition:transform .32s cubic-bezier(.32,1,.46,1);padding-bottom:max(20px,env(safe-area-inset-bottom))}
+.bsheet.open{transform:translateX(-50%) translateY(0)}
+.bsh-handle{width:34px;height:4px;border-radius:2px;background:#CBD5E1;margin:11px auto 0}
+.bsh-head{display:flex;align-items:center;justify-content:space-between;padding:13px 18px 7px}
+.bsh-title{font-size:15px;font-weight:900}
+.bsh-close{width:27px;height:27px;border-radius:50%;background:#F1F5F9;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;color:var(--sub);font-weight:700}
+.bsh-divider{height:1px;background:var(--border);margin:0 18px 3px}
+.mi{display:flex;align-items:center;gap:12px;padding:12px 18px;cursor:pointer;transition:background .1s}
+.mi:active{background:#F8FAFC}
+.mi-ico{width:37px;height:37px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mi-ico svg{width:19px;height:19px;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.mi-body{flex:1}
+.mi-title{font-size:13px;font-weight:800}
+.mi-desc{font-size:11px;color:var(--sub);font-weight:600;margin-top:1px}
+.mi-chev{width:6px;height:11px;stroke:var(--sub);stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+
+/* ─── TOAST ─── */
+.toast{position:fixed;bottom:92px;left:50%;transform:translateX(-50%) translateY(12px);background:#1E293B;color:#fff;padding:8px 18px;border-radius:24px;font-size:12px;font-weight:700;opacity:0;transition:all .25s;z-index:300;white-space:nowrap;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ─── FADE UP ─── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.content>*{animation:fadeUp .3s ease both}
+.content>*:nth-child(1){animation-delay:.04s}
+.content>*:nth-child(2){animation-delay:.09s}
+.content>*:nth-child(3){animation-delay:.14s}
+.content>*:nth-child(4){animation-delay:.19s}
+.content>*:nth-child(5){animation-delay:.24s}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="logo">Sınav<em>Plus</em></div>
+    <button class="login-btn" onclick="showToast('Kursiyer girişi açılıyor...')">
+      <svg viewBox="0 0 16 16"><circle cx="8" cy="5.5" r="3"/><path d="M2 14c0-3.314 2.686-5 6-5s6 1.686 6 5"/></svg>
+      Kursiyer Girişi
+    </button>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- ① SLIDER — fixed-height cards -->
+    <div class="slider-wrap">
+      <div class="slider-track" id="sliderTrack">
+
+        <!-- Slide 1: Geçme İhtimali -->
+        <div class="slide">
+          <div class="card-chance">
+            <div class="cc-label">Sınavı Geçme İhtimaliniz</div>
+            <div class="cc-mid">
+              <div>
+                <div class="cc-pct">75<em>%</em></div>
+                <div class="cc-note">İyi gidiyorsunuz 🎉</div>
+              </div>
+              <div class="cc-ring">
+                <svg viewBox="0 0 60 60" width="60" height="60">
+                  <circle class="r-bg" cx="30" cy="30" r="24"/>
+                  <circle class="r-fill" cx="30" cy="30" r="24"/>
+                </svg>
+                <div class="r-txt">75%</div>
+              </div>
+            </div>
+            <div class="cc-chips">
+              <div class="cchip g">✓ 142 doğru</div>
+              <div class="cchip w">✗ 38 yanlış</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Slide 2: Premium -->
+        <div class="slide">
+          <div class="card-premium" onclick="showToast('Premium sayfası açılıyor...')">
+            <div class="p-badge">%40 İNDİRİM</div>
+            <div class="p-top">
+              <div class="p-icon">👑</div>
+              <div>
+                <div class="p-title">Premium'a Geçin</div>
+                <div class="p-sub">İlk 24 saat özel fiyat!</div>
+              </div>
+            </div>
+            <div class="p-feats">
+              <div class="pfeat"><div class="pf-i">♾️</div><div class="pf-t">Sınırsız İçerik</div></div>
+              <div class="pfeat"><div class="pf-i">🚫</div><div class="pf-t">Sıfır Reklam</div></div>
+              <div class="pfeat"><div class="pf-i">📊</div><div class="pf-t">İstatistik</div></div>
+            </div>
+            <div class="p-cta">Hemen Başla →</div>
+          </div>
+        </div>
+
+        <!-- Slide 3: Giriş Yap -->
+        <div class="slide">
+          <div class="card-login">
+            <div class="l-top">
+              <div class="l-icon">
+                <svg viewBox="0 0 20 20"><circle cx="10" cy="7" r="3.5"/><path d="M3 18c0-3.866 3.134-7 7-7s7 3.134 7 7"/></svg>
+              </div>
+              <div>
+                <div class="l-title">Giriş Yap</div>
+                <div class="l-sub">Avantajları kaçırma</div>
+              </div>
+            </div>
+            <div class="l-desc">İstatistiklerini takip etmek ve tüm içeriklere erişmek için giriş yapmanı tavsiye ederiz.</div>
+            <div class="l-btns">
+              <div class="lb-out" onclick="showToast('Kayıt ol açılıyor...')">Kayıt Ol</div>
+              <div class="lb-in" onclick="showToast('Giriş yapılıyor...')">→ Giriş Yap</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div class="slider-dots">
+        <div class="dot active" onclick="goTo(0)"></div>
+        <div class="dot" onclick="goTo(1)"></div>
+        <div class="dot" onclick="goTo(2)"></div>
+      </div>
+    </div>
+
+    <!-- ② COUNTDOWN -->
+    <div class="countdown">
+      <span class="cd-fire">🔥</span>
+      <span class="cd-txt">İlk 24 saat premium indirimi bitiyor!</span>
+      <span class="cd-timer" id="cdTimer">11:42:08</span>
+    </div>
+
+    <!-- ③ 4 ANA BUTON -->
+    <div class="grid-4">
+
+      <div class="big-btn blue" onclick="showToast('Çıkmış Sorular açılıyor...')">
+        <div class="iw">
+          <svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2.5"/><path d="M8 7h8M8 11h8M8 15h5"/></svg>
+        </div>
+        <div>
+          <div class="btn-label">Çıkmış Sorular</div>
+          <div class="btn-sub">Son 5 yıl</div>
+        </div>
+      </div>
+
+      <div class="big-btn green" onclick="showToast('Günün Sınavı başlıyor...')">
+        <div class="iw">
+          <svg viewBox="0 0 24 24"><path d="M13 2L4.5 13.5H11L10 22L19.5 10H13L13 2z"/></svg>
+        </div>
+        <div>
+          <div class="btn-label">Günün Sınavı</div>
+          <div class="btn-sub">Bugün yeni!</div>
+        </div>
+      </div>
+
+      <div class="big-btn orange" onclick="showToast('Konu Testleri açılıyor...')">
+        <div class="iw">
+          <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M4 4.5A2.5 2.5 0 016.5 2H20v20H6.5A2.5 2.5 0 014 19.5z"/><path d="M9 7h6M9 11h4"/></svg>
+        </div>
+        <div>
+          <div class="btn-label">Konu Testleri</div>
+          <div class="btn-sub">48 test</div>
+        </div>
+      </div>
+
+      <div class="big-btn red" onclick="showToast('Yanlışlarınız listeleniyor...')">
+        <div class="bcnt">38</div>
+        <div class="iw">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15 9l-6 6M9 9l6 6"/></svg>
+        </div>
+        <div>
+          <div class="btn-label">Yanlışlarınız</div>
+          <div class="btn-sub">Tekrar çalış</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ④ DİĞER İÇERİKLER — glass -->
+    <div class="other-row" onclick="openSheet()">
+      <div class="or-inner">
+        <div class="or-left">
+          <div class="or-ham"><span></span><span></span><span></span></div>
+          <div class="or-title">Diğer Eğitim İçerikleri</div>
+        </div>
+        <div class="or-right">
+          Tümü Gör
+          <svg class="or-chev" viewBox="0 0 7 12"><path d="M1 1l5 5-5 5"/></svg>
+        </div>
+      </div>
+      <div class="or-sub">Sınav, notlar, videolar ve fazlası…</div>
+    </div>
+
+  </div><!-- /content -->
+
+  <!-- BOTTOM NAV -->
+  <div class="bottom-nav">
+
+    <div class="nav-item active" onclick="navClick(this,'Ana Sayfa')">
+      <div class="nav-icon">
+        <svg viewBox="0 0 24 24"><path d="M3 9.75L12 3l9 6.75V20a1 1 0 01-1 1H5a1 1 0 01-1-1z"/><path d="M9 21v-9h6v9"/></svg>
+      </div>
+      <div class="nav-label">Ana Sayfa</div>
+      <div class="active-bar"></div>
+    </div>
+
+    <div class="nav-item" onclick="navClick(this,'Profilim açılıyor')">
+      <div class="nav-icon">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.582-7 8-7s8 3 8 7"/></svg>
+      </div>
+      <div class="nav-label">Profilim</div>
+      <div class="active-bar"></div>
+    </div>
+
+    <div class="nav-item" onclick="navBell(this)">
+      <div class="nav-icon">
+        <div class="bell-wrap" id="bellWrap">
+          <svg viewBox="0 0 24 24" id="bellSvg" style="width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round">
+            <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/>
+          </svg>
+          <div class="bell-badge">3</div>
+        </div>
+      </div>
+      <div class="nav-label">Bildirim</div>
+      <div class="active-bar"></div>
+    </div>
+
+    <div class="nav-item" onclick="navClick(this,'Liderlik tablosu açılıyor')">
+      <div class="nav-icon">
+        <svg viewBox="0 0 24 24"><rect x="2" y="12" width="4" height="9" rx="1"/><rect x="10" y="7" width="4" height="14" rx="1"/><rect x="18" y="3" width="4" height="18" rx="1"/></svg>
+      </div>
+      <div class="nav-label">Liderlik</div>
+      <div class="active-bar"></div>
+    </div>
+
+    <div class="nav-item" onclick="navClick(this,'Ayarlar açılıyor')">
+      <div class="nav-icon">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      </div>
+      <div class="nav-label">Ayarlar</div>
+      <div class="active-bar"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- OVERLAY -->
+<div class="overlay" id="overlay" onclick="closeSheet()"></div>
+
+<!-- BOTTOM SHEET -->
+<div class="bsheet" id="bsheet">
+  <div class="bsh-handle"></div>
+  <div class="bsh-head">
+    <div class="bsh-title">Diğer Eğitim İçerikleri</div>
+    <div class="bsh-close" onclick="closeSheet()">✕</div>
+  </div>
+  <div class="bsh-divider"></div>
+
+  <div class="mi" onclick="sheetGo('Rastgele Sınav başlıyor...')">
+    <div class="mi-ico" style="background:#F0FDF4">
+      <svg stroke="#16A34A" viewBox="0 0 24 24"><path d="M2 18h4l2-4 4 8 3-8 2 4h5"/><path d="M18 2l4 4-4 4M22 6H14"/></svg>
+    </div>
+    <div class="mi-body"><div class="mi-title">Rastgele Sınav</div><div class="mi-desc">Karışık sorularla kendini sına</div></div>
+    <svg class="mi-chev" viewBox="0 0 7 12"><path d="M1 1l5 5-5 5"/></svg>
+  </div>
+
+  <div class="mi" onclick="sheetGo('Ders Notları açılıyor...')">
+    <div class="mi-ico" style="background:#EFF6FF">
+      <svg stroke="#2563EB" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M4 4.5A2.5 2.5 0 016.5 2H20v20H6.5A2.5 2.5 0 014 19.5z"/><path d="M9 7h6M9 11h4"/></svg>
+    </div>
+    <div class="mi-body"><div class="mi-title">Ders Notları</div><div class="mi-desc">Özet konular ve bilgi kartları</div></div>
+    <svg class="mi-chev" viewBox="0 0 7 12"><path d="M1 1l5 5-5 5"/></svg>
+  </div>
+
+  <div class="mi" onclick="sheetGo('Ders Videoları açılıyor...')">
+    <div class="mi-ico" style="background:#FEF2F2">
+      <svg stroke="#DC2626" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="3"/><polygon points="10,9 16,12 10,15" fill="#DC2626" stroke="none"/></svg>
+    </div>
+    <div class="mi-body"><div class="mi-title">Ders Videoları</div><div class="mi-desc">Anlatımlı konu videoları</div></div>
+    <svg class="mi-chev" viewBox="0 0 7 12"><path d="M1 1l5 5-5 5"/></svg>
+  </div>
+
+  <div class="mi" onclick="sheetGo('Levhalar açılıyor...')">
+    <div class="mi-ico" style="background:#FFFBEB">
+      <svg stroke="#D97706" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l2.5 2.5"/></svg>
+    </div>
+    <div class="mi-body"><div class="mi-title">Levhalar</div><div class="mi-desc">Trafik işaret ve levhaları</div></div>
+    <svg class="mi-chev" viewBox="0 0 7 12"><path d="M1 1l5 5-5 5"/></svg>
+  </div>
+
+  <div class="mi" onclick="sheetGo('Duyurular açılıyor...')">
+    <div class="mi-ico" style="background:#F5F3FF">
+      <svg stroke="#6D28D9" viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+    </div>
+    <div class="mi-body"><div class="mi-title">Duyurular</div><div class="mi-desc">3 yeni duyuru var</div></div>
+    <svg class="mi-chev" viewBox="0 0 7 12"><path d="M1 1l5 5-5 5"/></svg>
+  </div>
+
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ── Slider ── */
+let cur=0;
+const track=document.getElementById('sliderTrack');
+const dots=document.querySelectorAll('.dot');
+function goTo(n){
+  cur=n;
+  track.scrollTo({left:track.offsetWidth*n,behavior:'smooth'});
+  dots.forEach((d,i)=>d.classList.toggle('active',i===n));
+}
+let tx=0;
+track.addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
+track.addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-tx;
+  if(Math.abs(dx)>40) goTo(dx<0?Math.min(cur+1,2):Math.max(cur-1,0));
+});
+// Mouse drag support for desktop preview
+let mx=0,dragging=false;
+track.addEventListener('mousedown',e=>{mx=e.clientX;dragging=true});
+track.addEventListener('mouseup',e=>{if(!dragging)return;dragging=false;const dx=e.clientX-mx;if(Math.abs(dx)>40)goTo(dx<0?Math.min(cur+1,2):Math.max(cur-1,0))});
+track.addEventListener('mouseleave',()=>{dragging=false});
+setInterval(()=>goTo((cur+1)%3),4500);
+
+/* ── Sheet ── */
+function openSheet(){document.getElementById('overlay').classList.add('open');document.getElementById('bsheet').classList.add('open')}
+function closeSheet(){document.getElementById('overlay').classList.remove('open');document.getElementById('bsheet').classList.remove('open')}
+function sheetGo(m){closeSheet();setTimeout(()=>showToast(m),340)}
+
+/* ── Nav ── */
+function navClick(el,m){document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));el.classList.add('active');showToast(m)}
+function triggerBell(){
+  const bw=document.getElementById('bellWrap');
+  bw.classList.remove('bell-vibe');
+  void bw.offsetWidth;
+  bw.classList.add('bell-vibe');
+}
+function navBell(el){triggerBell();navClick(el,'Bildirimler açılıyor')}
+setInterval(triggerBell,6500);
+
+/* ── Toast ── */
+let tt;
+function showToast(m){
+  const t=document.getElementById('toast');
+  t.textContent=m;t.classList.add('show');
+  clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2000);
+}
+
+/* ── Countdown ── */
+let s=11*3600+42*60+8;
+function tick(){
+  const h=String(Math.floor(s/3600)).padStart(2,'0');
+  const m=String(Math.floor((s%3600)/60)).padStart(2,'0');
+  const sc=String(s%60).padStart(2,'0');
+  document.getElementById('cdTimer').textContent=`${h}:${m}:${sc}`;
+  if(s>0)s--;
+}
+tick();setInterval(tick,1000);
+</script>
+</body>
+</html>
